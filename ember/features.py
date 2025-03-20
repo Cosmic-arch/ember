@@ -98,7 +98,7 @@ class ByteEntropyHistogram(FeatureType):
 
     def raw_features(self, bytez, lief_binary):
         output = np.zeros((16, 16), dtype=np.int32)
-        a = np.frombuffer(bytez.encode('utf-8'), dtype=np.uint8)
+        a = np.frombuffer(bytez, dtype=np.uint8)
         if a.shape[0] < self.window:
             Hbin, c = self._entropy_bin_counts(a)
             output[Hbin, :] += c
