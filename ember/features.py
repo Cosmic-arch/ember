@@ -534,7 +534,7 @@ class PEFeatureExtractor(object):
         self.dim = sum([fe.dim for fe in self.features])
 
     def raw_features(self, bytez):
-        lief_errors = (lief.bad_file, lief.pe_error, lief.parser_error, lief.read_out_of_bound,
+        lief_errors = (lief.pe_error, lief.parser_error, lief.read_out_of_bound,
                        RuntimeError)
         try:
             lief_binary = lief.PE.parse(list(bytez))
