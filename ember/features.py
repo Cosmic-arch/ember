@@ -58,7 +58,7 @@ class ByteHistogram(FeatureType):
         super(FeatureType, self).__init__()
 
     def raw_features(self, bytez, lief_binary):
-        counts = np.bincount(np.frombuffer(bytez.encode('utf-8'), dtype=np.uint8), minlength=256)
+        counts = np.bincount(np.frombuffer(bytez, dtype=np.uint8), minlength=256)
         return counts.tolist()
 
     def process_raw_features(self, raw_obj):
