@@ -543,7 +543,7 @@ class PEFeatureExtractor(object):
         except Exception:  # everything else (KeyboardInterrupt, SystemExit, ValueError):
             raise
 
-        features = {"sha256": hashlib.sha256(bytez.encode('utf-8')).hexdigest()}
+        features = {"sha256": hashlib.sha256(bytez).hexdigest()}
         features.update({fe.name: fe.raw_features(bytez.encode('utf-8'), lief_binary) for fe in self.features})
         return features
 
