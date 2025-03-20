@@ -58,7 +58,7 @@ class ByteHistogram(FeatureType):
         super(FeatureType, self).__init__()
 
     def raw_features(self, bytez, lief_binary):
-        counts = np.bincount(np.frombuffer(bytez, dtype=np.uint8), minlength=256)
+        counts = np.bincount(np.frombuffer(bytez.encode('utf-8'), dtype=np.uint8), minlength=256)
         return counts.tolist()
 
     def process_raw_features(self, raw_obj):
@@ -98,7 +98,7 @@ class ByteEntropyHistogram(FeatureType):
 
     def raw_features(self, bytez, lief_binary):
         output = np.zeros((16, 16), dtype=np.int)
-        a = np.frombuffer(bytez, dtype=np.uint8)
+        a = np.frombuffer(bytez.encode('utf-8'), dtype=np.uint8)
         if a.shape[0] < self.window:
             Hbin, c = self._entropy_bin_counts(a)
             output[Hbin, :] += c
@@ -287,7 +287,7 @@ class GeneralFileInfo(FeatureType):
     def raw_features(self, bytez, lief_binary):
         if lief_binary is None:
             return {
-                'size': len(bytez),
+                'size': len(bytez.encode('utf-8')),
                 'vsize': 0,
                 'has_debug': 0,
                 'exports': 0,
@@ -300,7 +300,7 @@ class GeneralFileInfo(FeatureType):
             }
 
         return {
-            'size': len(bytez),
+            'size': len(bytez.encode('utf-8')),
             'vsize': lief_binary.virtual_size,
             'has_debug': int(lief_binary.has_debug),
             'exports': len(lief_binary.exported_functions),
@@ -442,10 +442,10 @@ class StringExtractor(FeatureType):
             'printabledist': c.tolist(),  # store non-normalized histogram
             'printables': int(csum),
             'entropy': float(H),
-            'paths': len(self._paths.findall(bytez)),
-            'urls': len(self._urls.findall(bytez)),
-            'registry': len(self._registry.findall(bytez)),
-            'MZ': len(self._mz.findall(bytez))
+            'paths': len(self._paths.findall(bytez.encode('utf-8'))),
+            'urls': len(self._urls.findall(bytez.encode('utf-8'))),
+            'registry': len(self._registry.findall(bytez.encode('utf-8'))),
+            'MZ': len(self._mz.findall(bytez.encode('utf-8')))
         }
 
     def process_raw_features(self, raw_obj):
@@ -536,7 +536,7 @@ class PEFeatureExtractor(object):
     def raw_features(self, bytez):
         lief_errors = (RuntimeError)
         try:
-            lief_binary = lief.PE.parse(list(bytez))
+            lief_binary = lief.PE.parse(list(bytez.encode('utf-8')))
         except lief_errors as e:
             print("lief error: ", str(e))
             lief_binary = None
@@ -544,7 +544,7 @@ class PEFeatureExtractor(object):
             raise
 
         features = {"sha256": hashlib.sha256(bytez.encode('utf-8')).hexdigest()}
-        features.update({fe.name: fe.raw_features(bytez, lief_binary) for fe in self.features})
+        features.update({fe.name: fe.raw_features(bytez.encode('utf-8'), lief_binary) for fe in self.features})
         return features
 
     def process_raw_features(self, raw_obj):
@@ -552,4 +552,4 @@ class PEFeatureExtractor(object):
         return np.hstack(feature_vectors).astype(np.float32)
 
     def feature_vector(self, bytez):
-        return self.process_raw_features(self.raw_features(bytez))
+        return self.process_raw_features(self.raw_features(bytez.encode('utf-8')))
