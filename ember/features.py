@@ -536,7 +536,7 @@ class PEFeatureExtractor(object):
     def raw_features(self, bytez):
         lief_errors = (RuntimeError)
         try:
-            lief_binary = lief.PE.parse(list(bytez.encode('utf-8')))
+            lief_binary = lief.PE.parse(list(bytez))
         except lief_errors as e:
             print("lief error: ", str(e))
             lief_binary = None
