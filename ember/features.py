@@ -552,4 +552,4 @@ class PEFeatureExtractor(object):
         return np.hstack(feature_vectors).astype(np.float32)
 
     def feature_vector(self, bytez):
-        return self.process_raw_features(self.raw_features(bytez.encode('utf-8')))
+        return self.process_raw_features(self.raw_features(bytez))
